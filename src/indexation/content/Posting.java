@@ -90,8 +90,20 @@ public class Posting implements Serializable, Comparable<Posting>
 
 		System.out.println(p1+" cmpTo "+p1bis+": "+p1.compareTo(p1bis));
 		System.out.println(p1+" cmpTo "+p2+": "+p1.compareTo(p2));
-		System.out.println(p2+" cmpTo "+p1+": "+p2.compareTo(p1));x
+		System.out.println(p2+" cmpTo "+p1+": "+p2.compareTo(p1));
 
 
+	}
+	public int getDocId() {
+		return docId;
+	}
+	public void setDocId(int docId) {
+		this.docId = docId;
+	}
+	public List<Integer> getPositions() {
+		return positions;
+	}
+	public void setPositions(List<Integer> positions) {
+		this.positions = positions;
 	}
 }

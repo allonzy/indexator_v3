@@ -1,5 +1,7 @@
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,24 +28,31 @@ public class Test1
 	 * 		Problème lors de la lecture de l'index
 	 */
 	public static void main(String[] args) throws IOException, ClassNotFoundException
-	{	// test de testIndexation
-		//TODO méthode à compléter (TP2-ex6)
+	{	
+		System.out.println("Debut des tests");
+
+		// test de testIndexation
+		//TODO voir pourquoi c'est si long
 		testIndexation();
 		// test de getFileNames
-		//TODO méthode à compléter (TP2-ex7)
-		
+		List<Posting> postings= new ArrayList();
+		postings.add(new Posting(1));
+		postings.add(new Posting(2));
+		postings.add(new Posting(3));
+		System.out.println(getFileNamesFromPostings(postings));
 		// test de Index.read
 		//TODO méthode à compléter (TP2-ex12)
 		
 		// test de testQuery
 //		testQuery();
+		System.out.println("Fin des tests");
 	}
 
 	////////////////////////////////////////////////////
 	//	INDEXATION
 	////////////////////////////////////////////////////
 	/** Dossier contenant le corpus */
-	public static final String CORPUS_FOLDER = "../Common/corpus";
+	public static final String CORPUS_FOLDER = ".."+File.separator+"Common"+File.separator+"corpus";
 
 	/**
 	 * Test des classes écrites lors des TP1 et TP2
@@ -56,9 +65,13 @@ public class Test1
 	{
 		Index i = Index.indexCorpus(CORPUS_FOLDER);
 		i.print();
-
-		//TODO méthode à compléter (TP2-ex11)
 		
+		//TODO méthode à compléter (TP2-ex11) vérifier parceque coder a la rache
+		File file = new File("data"+File.separator+"index.data");
+		FileOutputStream fos = new FileOutputStream(file);
+		ObjectOutputStream oos = new ObjectOutputStream(fos);
+		oos.writeObject(i);
+		oos.close();
 		//TODO méthode à compléter (TP4-ex9)
 		
 		//TODO méthode à modifier  (TP5-ex6)
@@ -111,8 +124,16 @@ public class Test1
 		File[] corpusFiles = corpusFolder.listFiles();
 		List<String> result = new ArrayList();
 		for (Posting posting : postings){
-			result.add(corpusFiles[posting.])
+			try{
+				File corpusFile = corpusFiles[posting.getDocId()];
+				result.add(corpusFile.getName());
+			}
+			catch(ArrayIndexOutOfBoundsException e){
+				System.out.println("Un problème avec votre liste de Posting est survenue, veuillez la regénerer");
+				throw e;
+			}
 		}
+		return result;
 	}
 
 	/**
