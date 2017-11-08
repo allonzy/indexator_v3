@@ -27,8 +27,8 @@ public class Test1
 	 */
 	public static void main(String[] args) throws IOException, ClassNotFoundException
 	{	// test de testIndexation
-		//TODO méthode à compléter (TP2-ex6) 
-		
+		//TODO méthode à compléter (TP2-ex6)
+		testIndexation();
 		// test de getFileNames
 		//TODO méthode à compléter (TP2-ex7)
 		
@@ -43,7 +43,7 @@ public class Test1
 	//	INDEXATION
 	////////////////////////////////////////////////////
 	/** Dossier contenant le corpus */
-	//TODO champ à définir (TP2-ex6))
+	public static final String CORPUS_FOLDER = "../Common/corpus";
 
 	/**
 	 * Test des classes écrites lors des TP1 et TP2
@@ -53,7 +53,10 @@ public class Test1
 	 * 		Problème lors d'un accès fichier.
 	 */
 	private static void testIndexation() throws IOException
-	{	//TODO méthode à compléter (TP2-ex6)
+	{
+		Index i = Index.indexCorpus(CORPUS_FOLDER);
+		i.print();
+
 		//TODO méthode à compléter (TP2-ex11)
 		
 		//TODO méthode à compléter (TP4-ex9)
@@ -103,9 +106,13 @@ public class Test1
 	 * 		Liste de noms de fichiers.
 	 */
 	private static List<String> getFileNamesFromPostings(List<Posting> postings)
-	{	List<String> result = new ArrayList<String>();
-		//TODO méthode à compléter (TP2-ex7)
-		return result;
+	{	
+		File corpusFolder = new File(CORPUS_FOLDER);
+		File[] corpusFiles = corpusFolder.listFiles();
+		List<String> result = new ArrayList();
+		for (Posting posting : postings){
+			result.add(corpusFiles[posting.])
+		}
 	}
 
 	/**

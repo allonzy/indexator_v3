@@ -48,26 +48,27 @@ public class Posting implements Serializable, Comparable<Posting>
 	////////////////////////////////////////////////////
 	@Override
 	public int compareTo(Posting posting)
-	{	int result = 0;
-		//TODO méthode à compléter (TP1-ex10)
-		return result;
+	{	
+		return this.docId - posting.docId;
 	}
 	////////////////////////////////////////////////////
 	//	OBJECT
 	////////////////////////////////////////////////////
 	@Override
 	public String toString()
-	{	String result = null;
+	{	
 		//TODO méthode à compléter (TP1-ex10)
-		//TODO méthode à modifier  (TP5-ex1)
-		return result;
+		return Integer.toString(this.docId);
 	}
 	
 	@Override
 	public boolean equals(Object o)
-	{	boolean result = false;
-		//TODO méthode à compléter (TP1-ex10)
-		return result;
+	{	
+		if (o instanceof Posting){
+			return (this.compareTo((Posting) o ) == 0 );
+		}else{
+			return false;
+		}
 	}
 	
 	////////////////////////////////////////////////////
@@ -76,11 +77,21 @@ public class Posting implements Serializable, Comparable<Posting>
 	public static void main(String[] args) 
 	{	// test du constructeur et de toString
 		// TODO méthode à compléter (TP1-ex10)
-		
+		Posting p1 = new Posting(1);
+		System.out.println(p1);
 		// test de equals
-		// TODO méthode à compléter (TP1-ex10)
-				
+		Posting p1bis = new Posting(1);
+		Posting p2 = new Posting(2);
+		
+		System.out.println(p1+"=="+p1bis+": "+p1.equals(p1bis));
+		System.out.println(p1+"=="+p2+": "+p1.equals(p2));
+
 		// test de compareTo
-		// TODO méthode à compléter (TP1-ex10)
+
+		System.out.println(p1+" cmpTo "+p1bis+": "+p1.compareTo(p1bis));
+		System.out.println(p1+" cmpTo "+p2+": "+p1.compareTo(p2));
+		System.out.println(p2+" cmpTo "+p1+": "+p2.compareTo(p1));x
+
+
 	}
 }

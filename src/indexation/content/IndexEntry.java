@@ -1,6 +1,8 @@
 package indexation.content;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Représente une entrée de l'index,
@@ -20,7 +22,10 @@ public class IndexEntry implements Serializable, Comparable<IndexEntry>
 	 * 		Terme inséré dans l'index.
 	 */
 	public IndexEntry(String term)
-	{	//TODO méthode à compléter (TP1-ex11)
+	{	
+		this.term = term;
+		this.postings = null;
+		this.frequency = 0;
 		//TODO méthode à modifier  (TP2-ex4)
 	}
 	
@@ -28,46 +33,69 @@ public class IndexEntry implements Serializable, Comparable<IndexEntry>
 	//	TERME
 	////////////////////////////////////////////////////
 	/** Terme concerné par ce posting */
-	//TODO champ à créer (TP1-ex11)
-	
+	private String term;
 	////////////////////////////////////////////////////
 	//	POSTINGS
 	////////////////////////////////////////////////////
 	/** Liste des postings contenant le terme */
 	//TODO champ à créer (TP1-ex11)
-	
+	private List<Posting> postings;
 	////////////////////////////////////////////////////
 	//	FREQUENCE
 	////////////////////////////////////////////////////
 	/** Fréquence du terme exprimée en nombre de documents */
-	//TODO champ à créer (TP2-ex4)
+	private int frequency;
 
 	////////////////////////////////////////////////////
 	//	COMPARABLE
 	////////////////////////////////////////////////////
 	@Override
 	public int compareTo(IndexEntry entry)
-	{	int result = 0;
-		//TODO méthode à compléter (TP1-ex11)
-		return result;
+	{	
+		return this.term.compareTo(entry.getTerm());
 	}
 	
+	public String getTerm() {
+		return term;
+	}
+
+	public void setTerm(String term) {
+		this.term = term;
+	}
+
+	public final List<Posting> getPostings() {
+		return postings;
+	}
+	public void setPostings(List<Posting> postings){
+		this.postings = postings;
+	}
+
 	////////////////////////////////////////////////////
 	//	OBJECT
 	////////////////////////////////////////////////////
 	@Override
 	public String toString()
-	{	String result = null;
-		//TODO méthode à compléter (TP1-ex11)
-		return result;
+	{	
+		String postingsString = (this.postings ==null)?"()":this.postings.toString().replace("[", "(").replace("]", ")").replace(","," ");
+		return "<"+this.term+"("+this.frequency+" occurences) "+postingsString+">";
 	}
 	
+	public int getFrequency() {
+		return frequency;
+	}
+
+	public void setFrequency(int frequency) {
+		this.frequency = frequency;
+	}
+
 	@Override
 	public boolean equals(Object o)
-	{	boolean result = false;
-		//TODO méthode à compléter (TP1-ex11)
-		//TODO méthode à modifier  (TP2-ex4)
-		return result;
+	{	
+		if(o instanceof IndexEntry){
+			return this.compareTo((IndexEntry)o) == 0;
+		}else{
+			return false;
+		}
 	}
 	
 	////////////////////////////////////////////////////
@@ -75,12 +103,20 @@ public class IndexEntry implements Serializable, Comparable<IndexEntry>
 	////////////////////////////////////////////////////
 	public static void main(String[] args) 
 	{	// test du constructeur et de toString
-		// TODO méthode à compléter (TP1-ex11)
-		
+		IndexEntry indexEntry1 = new IndexEntry("lorem");
+		System.out.println(indexEntry1);
 		// test de equals
-		// TODO méthode à compléter (TP1-ex11)
-				
+		String nonPosting = "lorem";
+		IndexEntry indexEntry2 = new IndexEntry("lorem");
+		IndexEntry indexEntry3 = new IndexEntry("ipsum");
+		System.out.println(indexEntry1+" == "+indexEntry2+" : "+indexEntry1.equals(indexEntry2));
+		System.out.println(indexEntry1+" == "+indexEntry3+" : "+indexEntry1.equals(indexEntry3));
+		System.out.println(indexEntry1+" == (String)"+nonPosting+" : "+indexEntry1.equals(nonPosting));
 		// test de compareTo
-		// TODO méthode à compléter (TP1-ex11)
+
+		System.out.println(indexEntry1+" cmpTo "+indexEntry2+" : "+indexEntry1.compareTo(indexEntry2));
+		System.out.println(indexEntry1+" cmpTo "+indexEntry3+" : "+indexEntry1.compareTo(indexEntry3));
+		System.out.println(indexEntry3+" cmpTo "+indexEntry1+" : "+indexEntry3.compareTo(indexEntry1));
+
 	}
 }

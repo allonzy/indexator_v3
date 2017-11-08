@@ -1,9 +1,23 @@
 package indexation;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import indexation.content.IndexEntry;
+import indexation.content.Token;
+import indexation.processing.Builder;
+import indexation.processing.Normalizer;
+import indexation.processing.Tokenizer;
 
 /**
  * Objet représentant un index sous
@@ -21,7 +35,11 @@ public class Index implements Serializable
 	 * 		Taille de l'index (exprimée en nombre de termes).
 	 */
 	public Index(int size)
-	{	//TODO méthode à compléter (TP1-ex12)
+	{	
+		this.size = 0;
+		this.data = new IndexEntry[size];
+		this.tokenizer = new Tokenizer();
+		this.normalizer = new Normalizer();
 	}
 	
 	/**
@@ -29,27 +47,35 @@ public class Index implements Serializable
 	 * d'un index prenant la forme d'un fichier inverse.
 	 * Le dossier passe en paramètre est supposé
 	 * contenir le corpus à traiter.
-	 * 
+	 * @throws UnsupportedEncodingException,FileNotFoundException
 	 * @param folder
 	 * 		Dossier du corpus à traiter.
 	 * @return
-	 * 		Index repr�sentant le corpus.
+	 * 		Index représentant le corpus.
 	 */
-	public static Index indexCorpus(String folder)
-	{	Index result = null;
-		//TODO méthode à compléter (TP2-ex5)
+	public static Index indexCorpus(String folder) throws UnsupportedEncodingException,FileNotFoundException
+	{	
+		long start = System.currentTimeMillis();
+		Tokenizer tokenizer = new Tokenizer();
+		Normalizer normalizer = new Normalizer();
+		Builder builder = new Builder();
+		List<Token> tokens = new ArrayList<Token>();
+		tokenizer.tokenizeCorpus(folder, tokens);
+		normalizer.normalizeTokens(tokens);
+		Index index = builder.buildIndex(tokens);
+		long end = System.currentTimeMillis();
+		System.out.println("Index.indexCorpus :"+(end-start)+"ms");
+		return index;
 		//TODO méthode à modifier  (TP2-ex9)
-		return result;
 	}
 	
 	////////////////////////////////////////////////////
 	//	DONNÉES
 	////////////////////////////////////////////////////
 	/** Lexique et postings de l'index */
-	//TODO champ à créer (TP1-ex12)
+	private IndexEntry[] data;
 	/** Nombre de documents dans la collection */
-	//TODO champ à créer (TP1-ex12)
-	
+	private int size;
 	/**
 	 * Renvoie l'entrée correspondant au terme
 	 * passé en paramètre. Si une telle entrée n'existe 
@@ -58,26 +84,33 @@ public class Index implements Serializable
 	 * @param term
 	 * 		Terme à rechercher.
 	 * @return
-	 * 		Entr�e associée au terme.
+	 * 		Entrée associée au terme.
 	 */
 	public IndexEntry getEntry(String term)
-	{	IndexEntry result = null;
-		//TODO méthode à compléter (TP1-ex14)
-		return result;
+	{	
+		IndexEntry indexEntryTerm = new IndexEntry(term);
+		int position = Arrays.binarySearch(this.data, indexEntryTerm);
+		return (position > 0)?this.data[position]:null;
+	}
+	public void setData(IndexEntry[] data){
+		this.data = data;
+	}
+	public void addToData(IndexEntry indexEntry){
+		this.data[this.size] = indexEntry;
+		this.size ++;
 	}
 	
 	////////////////////////////////////////////////////
 	//	TOKÉNISATION
 	////////////////////////////////////////////////////
 	/** Objet utilisé pour tokéniser le texte lors de l'indexation */
-	//TODO champ à créer (TP1-ex12)
+	Tokenizer tokenizer;
 	
 	////////////////////////////////////////////////////
 	//	NORMALISATION
 	////////////////////////////////////////////////////
 	/** Objet utilisé pour normaliser le texte lors de l'indexation */
-	//TODO champ à créer (TP1-ex12)
-
+	Normalizer normalizer;
 	////////////////////////////////////////////////////
 	//	STOCKAGE
 	////////////////////////////////////////////////////
@@ -97,9 +130,16 @@ public class Index implements Serializable
 	 * 		Problème lors de la lecture de l'index.
 	 */
 	public static Index read(String fileName) throws IOException, ClassNotFoundException
-	{	Index result = null;
-		//TODO méthode à compléter (TP2-ex12)
-		return result;
+	{
+		long start = System.currentTimeMillis();
+		File file = new File(fileName);
+		FileInputStream fis = new FileInputStream(file);
+		ObjectInputStream ois = new ObjectInputStream(fis);
+		Index i = (Index) ois.readObject();
+		long end = System.currentTimeMillis();
+		long duration = start - end;
+		System.out.println("Index loaded,duration ="+duration+"ms");
+		return i;
 	}
 	
 	/**
@@ -114,9 +154,13 @@ public class Index implements Serializable
 	 * 		Problème lors de l'écriture de l'index.
 	 */
 	public void write(String fileName) throws IOException
-	{	//TODO méthode à compléter (TP2-ex11)
+	{
+		File file = new File(fileName);
+		FileOutputStream fos = new FileOutputStream(file);
+		ObjectOutputStream oos = new ObjectOutputStream(fos);
+		oos.writeObject(this);
+		oos.close();
 	}
-
 	////////////////////////////////////////////////////
 	//	AFFICHAGE
 	////////////////////////////////////////////////////
@@ -124,14 +168,30 @@ public class Index implements Serializable
 	 * Affiche le contenu de l'index.
 	 */
 	public void print()
-	{	//TODO méthode à compléter (TP1-ex13)
+	{	
+		for (IndexEntry indexEntry : this.data){
+			if(indexEntry != null){
+				System.out.println(indexEntry);		
+			}
+		
+		}
 	}
 
 	////////////////////////////////////////////////////
 	//	TEST
 	////////////////////////////////////////////////////
 	public static void main(String[] args) 
-	{	// test du constructeur et de print
+	{	
+		IndexEntry indexEntry1 = new IndexEntry("lorem");
+		IndexEntry indexEntry2 = new IndexEntry("ipsum");
+		IndexEntry indexEntry3 = new IndexEntry("sit");
+		
+		// test du constructeur et de print
+		Index index1 = new Index(100);
+		index1.addToData(indexEntry1);
+		index1.addToData(indexEntry2);
+		index1.addToData(indexEntry3);
+		index1.print();
 		//TODO méthode à compléter (TP1-ex13)
 		
 		// test de getEntry

@@ -83,7 +83,7 @@ public class Tokenizer implements Serializable
 				String line = scanner.nextLine();
 				List<String> stringTokenList = this.tokenizeString(line);
 				for (String str: stringTokenList){
-					if (str.equals("")){
+					if (!str.equals("")){
 						Token token = new Token(str,docId);
 						tokens.add(token);
 					}
