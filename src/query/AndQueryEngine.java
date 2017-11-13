@@ -99,20 +99,20 @@ public class AndQueryEngine
 	 */
 	public void splitQuery(String query, List<List<Posting>> result)
 	{	
-		Tokenizer tokenizer = new Tokenizer();
-		Normalizer normalizer = new Normalizer();
+		Tokenizer tokenizer = this.index.getTokenizer();
+		Normalizer normalizer = this.index.getNormalizer();
 		
 		//TODO méthode à compléter (TP3-ex2)
 		List<String> tokenizedQuery = tokenizer.tokenizeString(query);
-		List<String> normalizedQuery = new ArrayList<String>();
 		for (String tokenString : tokenizedQuery ){
 			String normalizedToken = normalizer.normalizeType(tokenString);
-			normalizedQuery.add(normalizedToken);
-			IndexEntry indexEntry = this.index.getEntry(normalizedToken);
-			if(indexEntry != null){
-				result.add(indexEntry.getPostings());
-			}else{
-				result.add(new ArrayList<Posting>());
+			if (normalizedToken != null){
+				IndexEntry indexEntry = this.index.getEntry(normalizedToken);
+				if(indexEntry != null){
+					result.add(indexEntry.getPostings());
+				}else{
+					result.add(new ArrayList<Posting>());
+				}
 			}
 		}
 		//TODO méthode à modifier  (TP5-ex11)

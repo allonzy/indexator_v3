@@ -45,7 +45,10 @@ public class Normalizer implements Serializable
 	 * 		Problème de décodage lors de la lecture d'un document.
 	 */
 	public Normalizer(String fileName) throws FileNotFoundException, UnsupportedEncodingException
-	{	//TODO méthode à compléter (TP4-ex7)
+	{	
+		
+		this.stopWords = this.loadStopWords(fileName);
+		System.out.println();
 	}
 	
 	////////////////////////////////////////////////////
@@ -83,14 +86,20 @@ public class Normalizer implements Serializable
 	 */
 	public String normalizeType(String string)
 	{
-		return java.text.Normalizer.normalize(string, Form.NFD)
+		string =  java.text.Normalizer.normalize(string, Form.NFD)
 				.replaceAll("\\p{InCombiningDiacriticalMarks}+", "")
 				.toLowerCase();
+		if (this.stopWords != null && this.stopWords.contains(string)){
+			return null;
+		}else{
+			return string;
+		}
+
 	}
 
 	////////////////////////////////////////////////////
 	//	MOTS VIDES
-	////////////////////////////////////////////////////
+	////////////////////////////////////////!////////////
 	/** Liste des mots vides */
 	TreeSet<String> stopWords;
 	/**
@@ -116,12 +125,6 @@ public class Normalizer implements Serializable
 		Scanner scanner = new Scanner(isr);
 		while(scanner.hasNext()){
 			String word = scanner.next();
-			if(scanner.hasNext() == false){
-				System.out.println("Parsing error "+fileName+" mal former");
-				return null;
-			}
-			scanner.next(); // l'occurence du mot est inutilisé ici
-			//Integer occurence = Integer.parseInt(scanner.next());
 			result.add(word);
 		}
 		scanner.close();

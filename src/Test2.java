@@ -17,7 +17,7 @@ import indexation.processing.Tokenizer;
  * Classe permettant de tester
  * notre indexation.
  */
-public class Test1
+public class Test2
 {	/**
 	 * Méthode principale.
 	 * 
@@ -34,7 +34,7 @@ public class Test1
 		System.out.println("Debut des tests");
 
 		// test de testIndexation
-		// testIndexation();
+		testIndexation();
 		// test de getFileNames
 		// testGetFilesName();
 		// test de Index.read
@@ -49,7 +49,8 @@ public class Test1
 	////////////////////////////////////////////////////
 	/** Dossier contenant le corpus */
 	public static final String CORPUS_FOLDER = ".."+File.separator+"Common"+File.separator+"corpus";
-
+	/** Fichier contenant les stops word */
+	public static final String STOP_WORDS_FILE = "data"+File.separator+"stop-words.txt";
 	/**
 	 * Test des classes écrites lors des TP1 et TP2
 	 * (i.e. fichier inverse).
@@ -59,8 +60,8 @@ public class Test1
 	 */
 	private static void testIndexation() throws IOException
 	{
-		Index i = Index.indexCorpus(CORPUS_FOLDER);
-		i.print();
+		Index i = Index.indexCorpus(CORPUS_FOLDER,STOP_WORDS_FILE);
+		// i.print();
 		//TODO méthode à compléter (TP2-ex11) vérifier parceque coder a la rache
 		File file = new File("data"+File.separator+"index.data");
 		FileOutputStream fos = new FileOutputStream(file);
@@ -128,23 +129,20 @@ public class Test1
 		System.out.println("intersection de la requète \"recherche INFORMATION Web\" "+intersection3);
 		//TODO méthode à compléter (TP3-ex7)
 		List<String> queries = new ArrayList<String>();
-		queries.add("project");
-		queries.add("project SOFTWARE");
-		queries.add("project SOFTWARE Web");
 		queries.add("recherche");
 		queries.add("recherche INFORMATION");
 		queries.add("recherche INFORMATION Web");
+		queries.add("développé languages");
+
+		queries.add("développé plusieurs languages");
+
 		for (String query : queries){
 			List<Posting> intersection  = andQueryEngine.processQuery(query);
 			System.out.println("Result: "+intersection.size()+" document(s)");
 			System.out.println(intersection);
 			System.out.println("Files:");
 			System.out.println(getFileNamesFromPostings(intersection));
-		}
-		//TODO méthode à compléter (TP3-ex13)
-		
-		//TODO méthode à compléter (TP4-ex10)
-		
+		}		
 		//TODO méthode à compléter (TP5-ex14)
 		
 		//TODO méthode à compléter (TP6-ex3)

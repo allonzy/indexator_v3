@@ -30,8 +30,10 @@ public class Builder
 	 * 		Liste normalisée de tokens à traiter.
 	 * @return
 	 * 		L'index produit.
+	 * @throws UnsupportedEncodingException 
+	 * @throws FileNotFoundException 
 	 */
-	public Index buildIndex(List<Token> tokens)
+	public Index buildIndex(List<Token> tokens,Normalizer normalizer,Tokenizer tokenizer) throws FileNotFoundException, UnsupportedEncodingException
 	{	
 		long start = System.currentTimeMillis();
 		
@@ -48,9 +50,8 @@ public class Builder
 		startSection = System.currentTimeMillis();
 		int nbTerms = this.filterTokens(tokens);
 		endSection = System.currentTimeMillis();
-		System.out.println(tokens.size()+" tokens remaining, correspponding to "+nbTerms+" terms, duration="+(endSection-startSection)+"ms");
-
-		Index index = new Index(nbTerms);
+		System.out.println(tokens.size()+" tokens remaining, corresponding to "+nbTerms+" terms, duration="+(endSection-startSection)+"ms");
+		Index index =  new Index(nbTerms,normalizer,tokenizer);
 		System.out.println("Building posting list"); 
 		startSection = System.currentTimeMillis();
 		this.buildPostings(tokens, index);		// test de buildIndex

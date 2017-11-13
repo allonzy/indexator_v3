@@ -29,6 +29,7 @@ public class Index implements Serializable
 {	/** Class id (juste pour éviter le warning) */
 	private static final long serialVersionUID = 1L;
 	
+
 	/**
 	 * Construit un nouvel index vide,
 	 * de la taille indiquée en paramètre.
@@ -43,7 +44,23 @@ public class Index implements Serializable
 		this.tokenizer = new Tokenizer();
 		this.normalizer = new Normalizer();
 	}
-	
+	public Index(int size,Normalizer normalizer,Tokenizer tokenizer) throws FileNotFoundException, UnsupportedEncodingException{
+		this.size = 0;
+		this.data = new IndexEntry[size];
+		this.tokenizer = tokenizer;
+		this.normalizer = normalizer;	
+	}
+
+	/**
+	 * Pareil que {@link Index#indexCorpus(String)} sans stops word
+	 * @param folder
+	 * @return
+	 * @throws FileNotFoundException 
+	 * @throws UnsupportedEncodingException 
+	 */
+	public static Index indexCorpus(String folder) throws UnsupportedEncodingException, FileNotFoundException{
+		return indexCorpus(folder,null);
+	}
 	/**
 	 * Méthode de classe permettant la création
 	 * d'un index prenant la forme d'un fichier inverse.
@@ -52,25 +69,47 @@ public class Index implements Serializable
 	 * @throws UnsupportedEncodingException,FileNotFoundException
 	 * @param folder
 	 * 		Dossier du corpus à traiter.
+	 * @param stopWordsFile 
+	 * 		Fichier contenant une liste de stop words
+	 * 	    si null aucun stops words ne seront pris
 	 * @return
 	 * 		Index représentant le corpus.
 	 */
-	public static Index indexCorpus(String folder) throws UnsupportedEncodingException,FileNotFoundException
+	public static Index indexCorpus(String folder,String stopWordsFile) throws UnsupportedEncodingException,FileNotFoundException
 	{	
 		long start = System.currentTimeMillis();
 		Tokenizer tokenizer = new Tokenizer();
-		Normalizer normalizer = new Normalizer();
+		Normalizer normalizer = null ;
+		if(stopWordsFile == null){
+			normalizer = new Normalizer();	
+		}else{
+			normalizer = new Normalizer(stopWordsFile);
+		}
+		
 		Builder builder = new Builder();
 		List<Token> tokens = new LinkedList<Token>();
 		tokenizer.tokenizeCorpus(folder,tokens);
 		normalizer.normalizeTokens(tokens);
-		Index index = builder.buildIndex(tokens);
+		Index index = builder.buildIndex(tokens,normalizer,tokenizer);
 		long end = System.currentTimeMillis();
 		System.out.println("Index.indexCorpus :"+(end-start)+"ms");
 		return index;
 		//TODO méthode à modifier  (TP2-ex9)
 	}
 	
+	public Tokenizer getTokenizer() {
+		return tokenizer;
+	}
+	public void setTokenizer(Tokenizer tokenizer) {
+		this.tokenizer = tokenizer;
+	}
+	public Normalizer getNormalizer() {
+		return normalizer;
+	}
+	public void setNormalizer(Normalizer normalizer) {
+		this.normalizer = normalizer;
+	}
+
 	////////////////////////////////////////////////////
 	//	DONNÉES
 	////////////////////////////////////////////////////
