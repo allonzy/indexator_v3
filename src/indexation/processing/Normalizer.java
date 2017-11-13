@@ -2,12 +2,16 @@ package indexation.processing;
 
 import indexation.content.Token;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.text.Normalizer.Form;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Scanner;
 import java.util.TreeSet;
 
 /**
@@ -88,8 +92,7 @@ public class Normalizer implements Serializable
 	//	MOTS VIDES
 	////////////////////////////////////////////////////
 	/** Liste des mots vides */
-	//TODO champ à créer (TP4-ex6)
-	
+	TreeSet<String> stopWords;
 	/**
 	 * Charge la liste de mots vides contenue
 	 * dans le fichier dont le nom est passé en paramètre.
@@ -105,8 +108,23 @@ public class Normalizer implements Serializable
 	 * 		Problème de décodage lors de la lecture d'un document.
 	 */
 	private TreeSet<String> loadStopWords(String fileName) throws FileNotFoundException, UnsupportedEncodingException
-	{	TreeSet<String> result = null;
-		//TODO méthode à compléter (TP4-ex6)
+	{	
+		TreeSet<String> result = new TreeSet<String>();
+		File file = new File(fileName);
+		FileInputStream fis = new FileInputStream(file);
+		InputStreamReader isr = new InputStreamReader(fis);
+		Scanner scanner = new Scanner(isr);
+		while(scanner.hasNext()){
+			String word = scanner.next();
+			if(scanner.hasNext() == false){
+				System.out.println("Parsing error "+fileName+" mal former");
+				return null;
+			}
+			scanner.next(); // l'occurence du mot est inutilisé ici
+			//Integer occurence = Integer.parseInt(scanner.next());
+			result.add(word);
+		}
+		scanner.close();
 		return result;
 	}
 	
@@ -118,15 +136,19 @@ public class Normalizer implements Serializable
 	 * 
 	 * @param args
 	 * 		Pas utilisé.
+	 * @throws FileNotFoundException 
 	 * 
 	 * @throws UnsupportedEncodingException 
 	 * 		Problème lors de l'accès aux textes.
 	 */
-	public static void main(String[] args) 
+	public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException 
 	{	// test de normalizeType
 		Normalizer normalizer = new Normalizer();
 		System.out.println(normalizer.normalizeType("lOrEmr"));
 		
+		// test de loadStopWords
+		TreeSet<String> stopWords =  normalizer.loadStopWords("data"+File.separator+"stop-words.txt");
+		System.out.println(stopWords);
 		// test de normalizeTokens
 		//TODO méthode à compléter (TP1-ex9)
 	}
