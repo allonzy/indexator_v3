@@ -3,7 +3,13 @@ package query;
 import indexation.Index;
 import indexation.content.IndexEntry;
 import indexation.content.Posting;
+import indexation.processing.Normalizer;
+import indexation.processing.Tokenizer;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -11,7 +17,25 @@ import java.util.List;
  * requête booléenne sur un index.
  */
 public class AndQueryEngine
-{	/**
+{	
+	////////////////////////////////////////////////////
+	//	INDEX
+	////////////////////////////////////////////////////
+	/** Index de référence */
+	Index index;
+	/**
+	 * Comparateur traitant deux listes de postings.
+	 * On utilise simplement leurs longueurs.
+	 */
+	public final static Comparator<List<Posting>> COMPARATOR = new Comparator<List<Posting>>(){
+
+		@Override
+		public int compare(List<Posting> o1, List<Posting> o2) {
+			return o1.size() - o2.size();
+		}
+		
+	};
+	/**!
 	 * Initialise ce moteur de requête avec
 	 * l'index passé en paramêtre, qui sera
 	 * considéré comme index de référence
@@ -22,7 +46,8 @@ public class AndQueryEngine
 	 * 		Index de référence.
 	 */
 	public AndQueryEngine(Index index)
-	{	//TODO méthode à modifier (TP3-ex1)
+	{	
+		this.index = index;
 	}
 	
 	////////////////////////////////////////////////////
@@ -38,18 +63,20 @@ public class AndQueryEngine
 	 * 		Liste des documents concernés.
 	 */
 	public List<Posting> processQuery(String query)
-	{	List<Posting> result = null;
-		//TODO méthode à compléter (TP3-ex6)
+	{	
+		System.out.println("Processing Request \""+query+"\"");
+		long start = System.currentTimeMillis();
+		List<List<Posting>> queryPostings = new ArrayList<List<Posting>>();
+		this.splitQuery(query, queryPostings);		
+		List<Posting> result = this.processConjunctions(queryPostings);
 		//TODO méthode à modifier  (TP5-ex13)
 		//TODO méthode à modifier  (TP6-ex10)
+		long end = System.currentTimeMillis();
+		System.out.println("Query processed, duration="+(end-start)+" ms");
 		return result;
 	}
 	
-	/**
-	 * Comparateur traitant deux listes de postings.
-	 * On utilise simplement leurs longueurs.
-	 */
-	//TODO champ à créer (TP3-ex4)
+
 	//TODO champ à modifier (TP6-ex5)
 	
 	////////////////////////////////////////////////////
@@ -70,8 +97,24 @@ public class AndQueryEngine
 	 * 		correspondant aux termes obtenus après nettoyage 
 	 * 		de la requête. 
 	 */
-	private void splitQuery(String query, List<List<Posting>> result)
-	{	//TODO méthode à compléter (TP3-ex2)
+	public void splitQuery(String query, List<List<Posting>> result)
+	{	
+		Tokenizer tokenizer = new Tokenizer();
+		Normalizer normalizer = new Normalizer();
+		
+		//TODO méthode à compléter (TP3-ex2)
+		List<String> tokenizedQuery = tokenizer.tokenizeString(query);
+		List<String> normalizedQuery = new ArrayList<String>();
+		for (String tokenString : tokenizedQuery ){
+			String normalizedToken = normalizer.normalizeType(tokenString);
+			normalizedQuery.add(normalizedToken);
+			IndexEntry indexEntry = this.index.getEntry(normalizedToken);
+			if(indexEntry != null){
+				result.add(indexEntry.getPostings());
+			}else{
+				result.add(new ArrayList<Posting>());
+			}
+		}
 		//TODO méthode à modifier  (TP5-ex11)
 		//TODO méthode à modifier  (TP6-ex8)
 	}
@@ -103,10 +146,9 @@ public class AndQueryEngine
 	 * 		Le résultat de ET positionnel sur ces deux listes, sous la forme
 	 * 		d'un nouvel objet de classe {@code Posting}.
 	 */
-	private Posting processPositionalConjunction(Posting posting1, Posting posting2, int threshold)
-	{	Posting result = null;
-		//TODO méthode à compléter (TP5-ex8)
-		return result;
+	public Posting processPositionalConjunction(Posting postings1,Posting postings2, int threshold)
+	{		
+		return null;
 	}
 	
 	/**
@@ -120,12 +162,32 @@ public class AndQueryEngine
 	 * @return
 	 * 		Le résultat de ET sur ces deux listes.
 	 */
-	private List<Posting> processConjunction(List<Posting> list1, List<Posting> list2)
-	{	List<Posting> result = null;
-		//TODO méthode à compléter (TP3-ex3)
+	public List<Posting> processConjunction(List<Posting> list1, List<Posting> list2)
+	{			
+		List<Posting> result = new ArrayList<Posting>();
+		Iterator<Posting> itPos1 = list1.iterator();
+		Iterator<Posting> itPos2 = list2.iterator();
+		if (itPos1.hasNext() == false || itPos2.hasNext() == false){
+			return result;
+		}
+		Posting pos1 = itPos1.next();
+		Posting pos2 = itPos2.next();
+		while  (itPos1.hasNext() && itPos2.hasNext() ){
+			if(pos1.getDocId() < pos2.getDocId()){
+				pos1 = itPos1.next();
+			}
+			else if (pos2.getDocId() < pos1.getDocId()){
+				pos2 = itPos2.next();
+			}
+			else/*(pos1 == pos2 )*/{
+				result.add(pos1);
+				pos1 = itPos1.next();
+				pos2 = itPos2.next();
+			}
+	}
+	return result;
 		//TODO méthode à modifier  (TP5-ex9)
 		//TODO méthode à modifier  (TP6-ex5)
-		return result;
 	}
 
 	/**
@@ -137,9 +199,15 @@ public class AndQueryEngine
 	 * @return
 	 * 		Intersection de toutes les listes de postings.
 	 */
-	private List<Posting> processConjunctions(List<List<Posting>> postings)
-	{	List<Posting> result = null;
-		//TODO méthode à compléter (TP3-ex5)
+	public List<Posting> processConjunctions(List<List<Posting>> postingsList)
+	{
+		Collections.sort(postingsList,COMPARATOR);
+		Iterator<List<Posting>> itPostingsList = postingsList.iterator();
+		List<Posting> result = itPostingsList.next();
+		while(itPostingsList.hasNext()){
+			List<Posting> currentPostingList = itPostingsList.next();
+			result = this.processConjunction(result, currentPostingList);
+		}
 		//TODO méthode à modifier  (TP5-ex10)
 		//TODO méthode à modifier  (TP6-ex5)
 		return result;
@@ -198,11 +266,5 @@ public class AndQueryEngine
 	 */
 	private void sortDocuments(List<IndexEntry> queryEntries, int k, List<DocScore> docScores)
 	{	//TODO méthode à compléter (TP6-ex9)
-	}
-	
-	////////////////////////////////////////////////////
-	//	INDEX
-	////////////////////////////////////////////////////
-	/** Index de référence */
-	//TODO champ à créer (TP3-ex1)
+	}	
 }

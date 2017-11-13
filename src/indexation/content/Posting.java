@@ -9,7 +9,8 @@ import java.util.List;
  * contenant un token donné.
  */
 public class Posting implements Serializable, Comparable<Posting>
-{	/** Class id (juste pour éviter le warning) */
+{	
+	/** Class id (juste pour éviter le warning) */
 	private static final long serialVersionUID = 1L;
 	
 	/**

@@ -6,8 +6,10 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
+import query.AndQueryEngine;
 import query.DocScore;
 import indexation.Index;
+import indexation.content.IndexEntry;
 import indexation.content.Posting;
 import indexation.processing.Tokenizer;
 
@@ -32,19 +34,13 @@ public class Test1
 		System.out.println("Debut des tests");
 
 		// test de testIndexation
-		//TODO voir pourquoi c'est si long
-		testIndexation();
+		// testIndexation();
 		// test de getFileNames
-		List<Posting> postings= new ArrayList();
-		postings.add(new Posting(1));
-		postings.add(new Posting(2));
-		postings.add(new Posting(3));
-		System.out.println(getFileNamesFromPostings(postings));
+		// testGetFilesName();
 		// test de Index.read
-		//TODO méthode à compléter (TP2-ex12)
-		
+		// testIndexRead();
 		// test de testQuery
-//		testQuery();
+		testQuery();
 		System.out.println("Fin des tests");
 	}
 
@@ -65,7 +61,6 @@ public class Test1
 	{
 		Index i = Index.indexCorpus(CORPUS_FOLDER);
 		i.print();
-		
 		//TODO méthode à compléter (TP2-ex11) vérifier parceque coder a la rache
 		File file = new File("data"+File.separator+"index.data");
 		FileOutputStream fos = new FileOutputStream(file);
@@ -76,7 +71,27 @@ public class Test1
 		
 		//TODO méthode à modifier  (TP5-ex6)
 	}
-	
+	private static void testGetFilesName(){
+		List<Posting> postings= new ArrayList<Posting>();
+		postings.add(new Posting(1));
+		postings.add(new Posting(2));
+		postings.add(new Posting(3));
+		System.out.println(getFileNamesFromPostings(postings));
+	}
+	private static void testIndexRead(){
+		Index i;
+		try {
+			i = Index.read("data"+File.separator+"index.data");
+			System.out.println("affichage de l'index");
+			i.print();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
 	////////////////////////////////////////////////////
 	//	REQUÊTES
 	////////////////////////////////////////////////////
@@ -90,12 +105,42 @@ public class Test1
 	 * 		Problème lors de la lecture de l'index
 	 */
 	private static void testQuery() throws IOException, ClassNotFoundException
-	{	//TODO méthode à compléter (TP3-ex2)
-		//TODO méthode à compléter (TP3-ex3)
-		//TODO méthode à compléter (TP3-ex4)
-		//TODO méthode à compléter (TP3-ex5)
-		//TODO méthode à compléter (TP3-ex6)
+	{	
+		Index i = Index.read("data"+File.separator+"index.data");
+		AndQueryEngine andQueryEngine = new AndQueryEngine(i);
+		//TODO méthode à compléter (TP3-ex2)
+		List<List<Posting>> result = new ArrayList<List<Posting>>();
+		andQueryEngine.splitQuery("recherche INFORMATION Web", result);
+		for (List<Posting> postings : result){
+			System.out.println(postings.toString());
+		}
+
+		//(TP3-ex3)
+		List<Posting> intersection1 = andQueryEngine.processConjunction(result.get(0),result.get(1));
+		System.out.println("intersection entre recherche et INFORMATION" + intersection1);
+		//(TP3-ex4)
+		
+		// (TP3-ex5)
+		List<Posting> intersection2 = andQueryEngine.processConjunctions(result);
+		System.out.println("intersection de la requète \"recherche INFORMATION Web\" " +intersection2);
+		//(TP3-ex6)
+		List<Posting> intersection3 = andQueryEngine.processQuery("recherche INFORMATION Web");
+		System.out.println("intersection de la requète \"recherche INFORMATION Web\" "+intersection3);
 		//TODO méthode à compléter (TP3-ex7)
+		List<String> queries = new ArrayList<String>();
+		queries.add("project");
+		queries.add("project SOFTWARE");
+		queries.add("project SOFTWARE Web");
+		queries.add("recherche");
+		queries.add("recherche INFORMATION");
+		queries.add("recherche INFORMATION Web");
+		for (String query : queries){
+			List<Posting> intersection  = andQueryEngine.processQuery(query);
+			System.out.println("Result: "+intersection.size()+" document(s)");
+			System.out.println(intersection);
+			System.out.println("Files:");
+			System.out.println(getFileNamesFromPostings(intersection));
+		}
 		//TODO méthode à compléter (TP3-ex13)
 		
 		//TODO méthode à compléter (TP4-ex10)

@@ -33,7 +33,7 @@ public class Token implements Comparable<Token>
 	//	DOC ID
 	////////////////////////////////////////////////////
 	/** Numéro du document contenant le token */
-	private int docId;
+	private Integer docId;
 	
 	////////////////////////////////////////////////////
 	//	POSITION
@@ -46,9 +46,9 @@ public class Token implements Comparable<Token>
 	////////////////////////////////////////////////////
 	@Override
 	public int compareTo(Token token)
-	{	int result = token.type.compareTo(this.type);
+	{	Integer result = this.type.compareTo(token.type);
 		if (result == 0){
-			return token.docId - this.docId ;
+			return this.docId.compareTo(token.docId);
 		}else{
 			return result;
 		}

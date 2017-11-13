@@ -11,6 +11,8 @@ import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import indexation.content.IndexEntry;
@@ -59,8 +61,8 @@ public class Index implements Serializable
 		Tokenizer tokenizer = new Tokenizer();
 		Normalizer normalizer = new Normalizer();
 		Builder builder = new Builder();
-		List<Token> tokens = new ArrayList<Token>();
-		tokenizer.tokenizeCorpus(folder, tokens);
+		List<Token> tokens = new LinkedList<Token>();
+		tokenizer.tokenizeCorpus(folder,tokens);
 		normalizer.normalizeTokens(tokens);
 		Index index = builder.buildIndex(tokens);
 		long end = System.currentTimeMillis();
@@ -92,14 +94,16 @@ public class Index implements Serializable
 		int position = Arrays.binarySearch(this.data, indexEntryTerm);
 		return (position > 0)?this.data[position]:null;
 	}
-	public void setData(IndexEntry[] data){
+	public void setData(IndexEntry[] data,int size){
 		this.data = data;
+	}
+	public IndexEntry[] getData(){
+		return this.data;
 	}
 	public void addToData(IndexEntry indexEntry){
 		this.data[this.size] = indexEntry;
 		this.size ++;
 	}
-	
 	////////////////////////////////////////////////////
 	//	TOKÉNISATION
 	////////////////////////////////////////////////////
@@ -171,9 +175,8 @@ public class Index implements Serializable
 	{	
 		for (IndexEntry indexEntry : this.data){
 			if(indexEntry != null){
-				System.out.println(indexEntry);		
+				System.out.println(indexEntry);
 			}
-		
 		}
 	}
 
