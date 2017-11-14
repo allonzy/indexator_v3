@@ -1,5 +1,7 @@
 package indexation.content;
 
+import java.util.Comparator;
+
 /**
  * Représente un token, i.e. un couple
  * (mot,numéro) de document.
@@ -17,8 +19,9 @@ public class Token implements Comparable<Token>
 	 * @param docId
 	 * 		Numéro du document concerné.
 	 */
-	public Token(String type, int docId)
+	public Token(String type, int docId,Integer position)
 	{	
+		this.position = position;
 		this.type = type;
 		this.docId = docId;
 	}
@@ -39,19 +42,18 @@ public class Token implements Comparable<Token>
 	//	POSITION
 	////////////////////////////////////////////////////
 	/** Position du token dans le document */
-	//TODO champ à créer (TP5-ex2)
+	private Integer position;
 	
 	////////////////////////////////////////////////////
 	//	COMPARABLE
 	////////////////////////////////////////////////////
 	@Override
 	public int compareTo(Token token)
-	{	Integer result = this.type.compareTo(token.type);
-		if (result == 0){
-			return this.docId.compareTo(token.docId);
-		}else{
-			return result;
-		}
+	{	
+		return Comparator.comparing(Token::getType)
+			.thenComparing(Token::getDocId)
+			.thenComparing(Token::getPosition)
+			.compare(this, token);
 	}
 	
 	////////////////////////////////////////////////////
@@ -59,11 +61,27 @@ public class Token implements Comparable<Token>
 	////////////////////////////////////////////////////
 	@Override
 	public String toString()
-	{	String result = null;
+	{	
 		//TODO méthode à compléter (TP1-ex4)
-		return "("+this.type+", "+String.valueOf(this.docId)+")";
+		return "("+
+		this.type+", "
+		+String.valueOf(this.position)+", "
+		+String.valueOf(this.docId)+
+		")";
 	}
 	
+	public Integer getPosition() {
+		return position;
+	}
+
+	public void setPosition(Integer position) {
+		this.position = position;
+	}
+
+	public void setDocId(Integer docId) {
+		this.docId = docId;
+	}
+
 	public String getType() {
 		return type;
 	}
@@ -97,15 +115,14 @@ public class Token implements Comparable<Token>
 	public static void main(String[] args)
 	{	// test du constructeur et de toString
 		Boolean fail = false;
-		Token a = new Token("mot1",123);
+		Token a = new Token("mot1",123,1);
 		System.out.println(a.toString());
 		
 		// test de equals
 		// TODO méthode à compléter (TP1-ex4)
-		Token b = new Token("mot1",123);
-		Token c = new Token("mot1",500);
-		Token d = new Token("mot2",600);
-		
+		Token b = new Token("mot1",123,1);
+		Token c = new Token("mot1",500,2);
+		Token d = new Token("mot2",600,3);
 		if(a.equals(b) == false){
 			System.out.println("test 1 fail,"+a.toString()+" must be equal to "+b.toString());
 			fail = true;

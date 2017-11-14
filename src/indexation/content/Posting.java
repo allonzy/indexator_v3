@@ -1,6 +1,7 @@
 package indexation.content;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -23,7 +24,8 @@ public class Posting implements Serializable, Comparable<Posting>
 	 */
 	public Posting(int docId)
 	{	this.docId = docId;
-		//TODO méthode à modifier  (TP5-ex1)
+		this.positions = new ArrayList<Integer>();
+		this.frequency = 0; 
 	}
 
 	////////////////////////////////////////////////////
@@ -42,7 +44,7 @@ public class Posting implements Serializable, Comparable<Posting>
 	//	FRÉQUENCE
 	////////////////////////////////////////////////////
 	/** Fréquence du terme dans le document */
-	//TODO champ à créer (TP5-ex1)
+	public Integer frequency;
 	
 	////////////////////////////////////////////////////
 	//	COMPARABLE
@@ -58,8 +60,7 @@ public class Posting implements Serializable, Comparable<Posting>
 	@Override
 	public String toString()
 	{	
-		//TODO méthode à compléter (TP1-ex10)
-		return Integer.toString(this.docId);
+		return Integer.toString(this.docId)+"["+this.frequency+"]"+this.positions;
 	}
 	
 	@Override
@@ -77,7 +78,6 @@ public class Posting implements Serializable, Comparable<Posting>
 	////////////////////////////////////////////////////
 	public static void main(String[] args) 
 	{	// test du constructeur et de toString
-		// TODO méthode à compléter (TP1-ex10)
 		Posting p1 = new Posting(1);
 		System.out.println(p1);
 		// test de equals

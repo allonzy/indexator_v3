@@ -78,16 +78,17 @@ public class Tokenizer implements Serializable
 			FileInputStream fis = new FileInputStream(document);
 			InputStreamReader isr = new InputStreamReader(fis,"UTF-8");
 			Scanner scanner = new Scanner(isr);
-			
+			int i = 0;
 			while(scanner.hasNextLine()){
 				String line = scanner.nextLine();
 				List<String> stringTokenList = this.tokenizeString(line);
 				for (String str: stringTokenList){
 					if (!str.equals("")){
-						Token token = new Token(str,docId);
+						Token token = new Token(str,docId,i);
 						tokens.add(token);
 					}
 				}
+				i++;
 			}
 			scanner.close();
 

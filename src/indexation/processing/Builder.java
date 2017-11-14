@@ -151,12 +151,12 @@ public class Builder
 		Tokenizer tokenizer = new Tokenizer();
 		Normalizer normalizer = new Normalizer();
 		List<Token> tokens = new ArrayList();
-		tokens.add(new Token("t1", 0));
-		tokens.add(new Token("t1", 0));
-		tokens.add(new Token("t2", 0));
-		tokens.add(new Token("t1", 1));
-		tokens.add(new Token("t1", 1));
-		tokens.add(new Token("t1", 2));
+		tokens.add(new Token("t1", 0,1));
+		tokens.add(new Token("t1", 0,2));
+		tokens.add(new Token("t2", 0,3));
+		tokens.add(new Token("t1", 1,4));
+		tokens.add(new Token("t1", 1,5));
+		tokens.add(new Token("t1", 2,6));
 		Collections.sort(tokens);
 		List<Token> tokensCopy = new ArrayList(tokens);
 		//TODO méthode à compléter (TP2-ex1)

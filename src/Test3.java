@@ -17,7 +17,7 @@ import indexation.processing.Tokenizer;
  * Classe permettant de tester
  * notre indexation.
  */
-public class Test2
+public class Test3
 {	/**
 	 * Méthode principale.
 	 * 
